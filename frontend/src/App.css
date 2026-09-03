@@ -124,10 +124,12 @@
 .btn-danger {
   background: var(--danger-btn);
   color: var(--text-inverse);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
 }
 
 .btn-danger:hover:not(:disabled) {
   background: var(--danger-btn-hover);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
 }
 
 .btn-ghost {
@@ -767,9 +769,317 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
-  padding-top: 1rem;
+  padding: 1rem 1.5rem 1.25rem;
   border-top: 1px solid var(--border-subtle);
+}
+
+/* ==========================================
+   Ticket Detail Modal Styles
+   ========================================== */
+.detail-modal-dialog {
+  max-width: 640px;
+}
+
+.detail-modal-header {
+  padding: 1.25rem 1.5rem;
+  align-items: center;
+}
+
+.detail-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.detail-ticket-id {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.detail-modal-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.detail-ticket-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.detail-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.detail-meta-card {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.detail-meta-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.detail-meta-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.detail-meta-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.detail-meta-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Quick Status Selector in Detail Modal */
+.detail-status-section {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-section-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.status-updating-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--primary-600);
+  font-weight: 600;
+}
+
+.status-pill-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.status-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.status-pill-btn:hover:not(:disabled) {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.status-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+}
+
+.status-active-check {
+  margin-left: 0.2rem;
+}
+
+/* Active Status Pill States */
+.status-pill-btn.active.status-pill-open {
+  background: var(--status-open-bg);
+  color: var(--status-open-text);
+  border-color: var(--status-open-border);
+  box-shadow: 0 0 0 1px var(--status-open-dot);
+}
+.status-pill-btn.active.status-pill-open .status-pill-dot {
+  background-color: var(--status-open-dot);
+}
+
+.status-pill-btn.active.status-pill-in-progress {
+  background: var(--status-progress-bg);
+  color: var(--status-progress-text);
+  border-color: var(--status-progress-border);
+  box-shadow: 0 0 0 1px var(--status-progress-dot);
+}
+.status-pill-btn.active.status-pill-in-progress .status-pill-dot {
+  background-color: var(--status-progress-dot);
+}
+
+.status-pill-btn.active.status-pill-resolved {
+  background: var(--status-resolved-bg);
+  color: var(--status-resolved-text);
+  border-color: var(--status-resolved-border);
+  box-shadow: 0 0 0 1px var(--status-resolved-dot);
+}
+.status-pill-btn.active.status-pill-resolved .status-pill-dot {
+  background-color: var(--status-resolved-dot);
+}
+
+/* Description Details */
+.detail-description-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.detail-description-box {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.125rem;
+}
+
+.detail-description-text {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-modal-footer {
+  justify-content: space-between;
+}
+
+/* ==========================================
+   Confirm Dialog Styles
+   ========================================== */
+.confirm-dialog-backdrop {
+  z-index: 110;
+}
+
+.confirm-dialog {
+  max-width: 460px;
+  padding: 1.5rem;
+  gap: 1.25rem;
+}
+
+.confirm-dialog-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.confirm-dialog-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--danger-bg);
+  color: var(--danger-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirm-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.confirm-dialog-title {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.confirm-dialog-message {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.confirm-ticket-preview {
   margin-top: 0.5rem;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.confirm-ticket-id {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.confirm-ticket-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 /* ==========================================
@@ -968,6 +1278,12 @@
     justify-content: space-between;
   }
   .form-row-2col {
+    grid-template-columns: 1fr;
+  }
+  .detail-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .status-pill-group {
     grid-template-columns: 1fr;
   }
 }

@@ -7,10 +7,12 @@ import {
   Clock, 
   AlertCircle 
 } from 'lucide-react';
-import { fetchTickets } from './api/ticketService';
+import { fetchTickets, updateTicket, deleteTicket } from './api/ticketService';
 import FilterBar from './components/FilterBar';
 import TicketList from './components/TicketList';
 import CreateTicketModal from './components/CreateTicketModal';
+import TicketDetailModal from './components/TicketDetailModal';
+import ConfirmDialog from './components/ConfirmDialog';
 import Toast from './components/Toast';
 
 function App() {
@@ -26,6 +28,11 @@ function App() {
   // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ticketToDelete, setTicketToDelete] = useState(null);
+
+  // Async Action Progress States
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Toast Notification State
   const [toast, setToast] = useState({ message: null, type: 'success' });
@@ -55,7 +62,7 @@ function App() {
     loadTickets();
   }, [loadTickets]);
 
-  // Client-side search across returned tickets
+  // Client-side text search on the fetched tickets
   const filteredTickets = useMemo(() => {
     if (!searchQuery.trim()) {
       return tickets;
@@ -70,7 +77,7 @@ function App() {
     });
   }, [tickets, searchQuery]);
 
-  // Overall counts
+  // Overall metric counts
   const totalCount = tickets.length;
   const openCount = tickets.filter((t) => t.status === 'Open').length;
   const inProgressCount = tickets.filter((t) => t.status === 'In Progress').length;
@@ -85,15 +92,63 @@ function App() {
   };
 
   const handleTicketCreated = (newTicket) => {
-    // Refresh tickets from server to keep everything in sync
     loadTickets();
     showToast(`Ticket #${newTicket.id} "${newTicket.title}" was created successfully!`, 'success');
   };
 
   const handleSelectTicket = (ticket) => {
     setSelectedTicket(ticket);
-    // Detail modal will be connected in Phase 6
-    console.log('Selected ticket for details:', ticket);
+  };
+
+  const handleStatusChange = async (ticketId, newStatus) => {
+    try {
+      setIsUpdatingStatus(true);
+      const updated = await updateTicket(ticketId, { status: newStatus });
+      
+      // Update selected ticket in modal
+      setSelectedTicket(updated);
+      
+      // Update list in place
+      setTickets((prev) =>
+        prev.map((t) => (t.id === ticketId ? updated : t))
+      );
+
+      showToast(`Status updated to "${newStatus}" for ticket #${ticketId}`, 'success');
+    } catch (err) {
+      console.error('Failed to update ticket status:', err);
+      showToast(err.message || 'Failed to update status', 'error');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleDeleteRequest = (ticket) => {
+    setTicketToDelete(ticket);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!ticketToDelete) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteTicket(ticketToDelete.id);
+
+      // Remove from list
+      setTickets((prev) => prev.filter((t) => t.id !== ticketToDelete.id));
+
+      // Close modals
+      setSelectedTicket(null);
+      const deletedId = ticketToDelete.id;
+      const deletedTitle = ticketToDelete.title;
+      setTicketToDelete(null);
+
+      showToast(`Ticket #${deletedId} "${deletedTitle}" was deleted successfully`, 'success');
+    } catch (err) {
+      console.error('Failed to delete ticket:', err);
+      showToast(err.message || 'Failed to delete ticket', 'error');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -211,6 +266,29 @@ function App() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onTicketCreated={handleTicketCreated}
+      />
+
+      {/* Ticket Detail & Status Modal */}
+      <TicketDetailModal
+        ticket={selectedTicket}
+        isOpen={Boolean(selectedTicket)}
+        onClose={() => setSelectedTicket(null)}
+        onStatusChange={handleStatusChange}
+        onDeleteRequest={handleDeleteRequest}
+        isUpdatingStatus={isUpdatingStatus}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(ticketToDelete)}
+        title="Delete Support Ticket"
+        message="Are you sure you want to permanently delete this support ticket? This action cannot be undone."
+        ticketTitle={ticketToDelete?.title}
+        ticketId={ticketToDelete?.id}
+        confirmLabel="Delete Ticket"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setTicketToDelete(null)}
+        isProcessing={isDeleting}
       />
 
       {/* Floating Toast Notification */}
