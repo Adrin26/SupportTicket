@@ -10,6 +10,8 @@ import {
 import { fetchTickets } from './api/ticketService';
 import FilterBar from './components/FilterBar';
 import TicketList from './components/TicketList';
+import CreateTicketModal from './components/CreateTicketModal';
+import Toast from './components/Toast';
 
 function App() {
   const [tickets, setTickets] = useState([]);
@@ -21,8 +23,16 @@ function App() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [priorityFilter, setPriorityFilter] = useState('All');
 
-  // Selected Ticket for details modal (Phase 6)
+  // Modal States
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+
+  // Toast Notification State
+  const [toast, setToast] = useState({ message: null, type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+  };
 
   const loadTickets = useCallback(async () => {
     try {
@@ -45,7 +55,7 @@ function App() {
     loadTickets();
   }, [loadTickets]);
 
-  // Client-side text search on the fetched tickets
+  // Client-side search across returned tickets
   const filteredTickets = useMemo(() => {
     if (!searchQuery.trim()) {
       return tickets;
@@ -60,7 +70,7 @@ function App() {
     });
   }, [tickets, searchQuery]);
 
-  // Overall metric counts (fetched across all for KPI accuracy or based on current dataset)
+  // Overall counts
   const totalCount = tickets.length;
   const openCount = tickets.filter((t) => t.status === 'Open').length;
   const inProgressCount = tickets.filter((t) => t.status === 'In Progress').length;
@@ -74,10 +84,16 @@ function App() {
     setPriorityFilter('All');
   };
 
+  const handleTicketCreated = (newTicket) => {
+    // Refresh tickets from server to keep everything in sync
+    loadTickets();
+    showToast(`Ticket #${newTicket.id} "${newTicket.title}" was created successfully!`, 'success');
+  };
+
   const handleSelectTicket = (ticket) => {
     setSelectedTicket(ticket);
-    // Modal will open here in Phase 6
-    console.log('Selected ticket:', ticket);
+    // Detail modal will be connected in Phase 6
+    console.log('Selected ticket for details:', ticket);
   };
 
   return (
@@ -107,7 +123,11 @@ function App() {
               <RefreshCw size={16} className={loading ? 'spinner spinner-dark' : ''} />
               <span>Refresh</span>
             </button>
-            <button className="btn btn-primary" onClick={() => console.log('Open Create Modal (Phase 5)')}>
+            <button 
+              className="btn btn-primary"
+              onClick={() => setIsCreateModalOpen(true)}
+              id="btn-create-ticket"
+            >
               <Plus size={16} />
               <span>New Ticket</span>
             </button>
@@ -180,11 +200,25 @@ function App() {
           error={error}
           onRetry={loadTickets}
           onSelectTicket={handleSelectTicket}
-          onOpenCreateModal={() => console.log('Open create modal')}
+          onOpenCreateModal={() => setIsCreateModalOpen(true)}
           onResetFilters={handleResetFilters}
           isFiltered={isFiltered}
         />
       </main>
+
+      {/* Create Ticket Modal */}
+      <CreateTicketModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onTicketCreated={handleTicketCreated}
+      />
+
+      {/* Floating Toast Notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ message: null, type: 'success' })}
+      />
     </div>
   );
 }
