@@ -1,9 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone,timedelta
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from database import Base
 
+UTC8 = timezone(timedelta(hours=8))
 def get_utc_now():
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC8)
 
 class Ticket(Base):
     __tablename__ = "tickets"

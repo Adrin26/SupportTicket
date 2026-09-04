@@ -1,9 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 import models
 import schemas
 
+UTC8 = timezone(timedelta(hours=8))
 
 def get_tickets(
     db: Session,
@@ -51,7 +52,7 @@ def update_ticket(
                 value = value.value
             setattr(db_ticket, field, value)
 
-    db_ticket.updatedAt = datetime.now(timezone.utc)
+    db_ticket.updatedAt = datetime.now(UTC8)
     db.commit()
     db.refresh(db_ticket)
     return db_ticket
